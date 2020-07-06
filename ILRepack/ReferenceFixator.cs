@@ -29,7 +29,7 @@ namespace ILRepacking
         private readonly IRepackContext _repackContext;
         private string targetAssemblyPublicKeyBlobString;
         private readonly HashSet<GenericParameter> fixedGenericParameters = new HashSet<GenericParameter>();
-        private bool renameIkvmAttributeReference;
+        // private bool renameIkvmAttributeReference;
 
         public ReferenceFixator(ILogger logger, IRepackContext repackContext)
         {
@@ -176,8 +176,8 @@ namespace ILRepacking
                 return Fix((CustomAttributeArgument)obj);
             if (obj is CustomAttributeArgument[])
                 return Array.ConvertAll((CustomAttributeArgument[])obj, a => Fix(a));
-            if (renameIkvmAttributeReference && obj is string)
-                return _repackContext.FixReferenceInIkvmAttribute((string)obj);
+            // if (renameIkvmAttributeReference && obj is string)
+            //     return _repackContext.FixReferenceInIkvmAttribute((string)obj);
             return obj;
         }
 
@@ -333,7 +333,7 @@ namespace ILRepacking
         {
             foreach (CustomAttribute attribute in attributes)
             {
-                renameIkvmAttributeReference = IsAnnotation(attribute.AttributeType.Resolve());
+                // renameIkvmAttributeReference = IsAnnotation(attribute.AttributeType.Resolve());
                 attribute.Constructor = Fix(attribute.Constructor);
                 FixReferences(attribute.ConstructorArguments);
                 FixReferences(attribute.Fields);
@@ -341,14 +341,14 @@ namespace ILRepacking
             }
         }
 
-        private bool IsAnnotation(TypeDefinition typeAttribute)
-        {
-            if (typeAttribute == null)
-                return false;
-            if (typeAttribute.Interfaces.Any(@interface => @interface.InterfaceType.FullName == "java.lang.annotation.Annotation"))
-                return true;
-            return typeAttribute.BaseType != null && IsAnnotation(typeAttribute.BaseType.Resolve());
-        }
+        // private bool IsAnnotation(TypeDefinition typeAttribute)
+        // {
+        //     if (typeAttribute == null)
+        //         return false;
+        //     if (typeAttribute.Interfaces.Any(@interface => @interface.InterfaceType.FullName == "java.lang.annotation.Annotation"))
+        //         return true;
+        //     return typeAttribute.BaseType != null && IsAnnotation(typeAttribute.BaseType.Resolve());
+        // }
 
         private void FixReferences(Collection<TypeReference> refs)
         {

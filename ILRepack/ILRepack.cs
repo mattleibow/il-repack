@@ -460,10 +460,10 @@ namespace ILRepacking
             return FixStr(content, false);
         }
 
-        string IRepackContext.FixReferenceInIkvmAttribute(string content)
-        {
-            return FixStr(content, true);
-        }
+        // string IRepackContext.FixReferenceInIkvmAttribute(string content)
+        // {
+        //     return FixStr(content, true);
+        // }
 
         private string FixStr(string content, bool javaAttribute)
         {

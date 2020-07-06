@@ -40,11 +40,11 @@ namespace ILRepacking
         string FixAssemblyName(string assemblyName);
         string FixStr(string content);
 
-        /// <summary>
-        /// Fix assembly reference in attribute
-        /// </summary>
-        /// <param name="content">string to search in</param>
-        /// <returns>new string with references fixed</returns>
-        string FixReferenceInIkvmAttribute(string content);
+        // /// <summary>
+        // /// Fix assembly reference in attribute
+        // /// </summary>
+        // /// <param name="content">string to search in</param>
+        // /// <returns>new string with references fixed</returns>
+        // string FixReferenceInIkvmAttribute(string content);
     }
 }
