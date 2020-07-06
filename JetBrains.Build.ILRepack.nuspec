@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>JetBrains.Build.ILRepack</id>
+    <version>0.0.1</version>
+    <title>ILRepack</title>
+    <authors>Francois Valdy</authors>
+    <owners>epeshk;jetbrains</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://github.com/gluck/il-repack/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/gluck/il-repack/</projectUrl>
+    <description>Yes</description>
+    <copyright>Copyright Francois Valdy 2011-2015</copyright>
+    <dependencies>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="build\Release\net40\**" target="tools\net40" />
+    <file src="build\Release\netcore\**" target="tools\netcore" />
+    <file src="_._" target="lib\net20" />
+  </files>
+</package>
