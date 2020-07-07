@@ -55,8 +55,15 @@
   <ItemGroup>
     <None Include="ILRepack.snk" />
   </ItemGroup>
+  <PropertyGroup>
+    <PdbStr>~/.nuget/packages/sourcelink/1.1.0/tools/pdbstr.exe</PdbStr>
+  </PropertyGroup>
+  <PropertyGroup>
+    <HomeDir>$(UserProfile)</HomeDir>
+    <HomeDir Condition="'$(HomeDir)' == ''">$(Home)</HomeDir>
+  </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\packages\SourceLink.1.1.0\tools\pdbstr.exe" />
+    <EmbeddedResource Include="$(HomeDir)\.nuget\packages\sourcelink\1.1.0\tools\pdbstr.exe" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net40" Version="1.0.0" />
@@ -72,9 +79,9 @@
       <RuntimesFolder Include="$(OutputPath)runtimes\**" />
     </ItemGroup>
     <RemoveDir Directories="$(ProjectDir)..\build\$(Configuration)\netcore" />
-    <Exec WorkingDirectory="$(ProjectDir)$(OutputPath)" Command="dotnet &quot;$(ProjectDir)$(OutputPath)ILRepack.dll&quot; /internalize /log:$(ProjectDir)$(OutputPath)ilrepack.log /out:$(ProjectDir)..\build\$(Configuration)\netcore\$(AssemblyName).dll @(MergeAssemblies->'%(FileName)%(Extension)', ' ')" />
+    <Exec WorkingDirectory="$(ProjectDir)$(OutputPath)" Command="dotnet &quot;$(ProjectDir)$(OutputPath)ILRepack.dll&quot; /internalize /log:$(ProjectDir)$(OutputPath)ilrepack.log /out:$(ProjectDir)../build/$(Configuration)/netcore/$(AssemblyName).dll @(MergeAssemblies->'%(FileName)%(Extension)', ' ')" />
     <Copy SourceFiles="$(OutputPath)$(AssemblyName).runtimeconfig.json;" DestinationFolder="$(ProjectDir)..\build\$(Configuration)\netcore\" />
-    <Copy SourceFiles="ILRepack.deps.json;" DestinationFolder="$(ProjectDir)..\build\$(Configuration)\netcore\" />
+    <Copy SourceFiles="ILRepack.deps.json" DestinationFolder="$(ProjectDir)..\build\$(Configuration)\netcore\" />
     <Copy SourceFiles="@(RuntimesFolder)" DestinationFolder="$(ProjectDir)..\build\$(Configuration)\netcore\runtimes\%(RecursiveDir)" />
   </Target>
 
@@ -86,7 +93,7 @@
       <MergeAssemblies Include="$(OutputPath)BamlParser.dll" />
     </ItemGroup>
     <RemoveDir Directories="$(ProjectDir)..\build\$(Configuration)\net40" />
-    <Exec WorkingDirectory="$(ProjectDir)$(OutputPath)" Command="&quot;$(ProjectDir)$(OutputPath)ILRepack.exe&quot; /internalize /log:$(ProjectDir)$(OutputPath)ilrepack.log /out:$(ProjectDir)..\build\$(Configuration)\net40\ILRepack.exe @(MergeAssemblies->'%(FileName)%(Extension)', ' ')" />
+    <Exec WorkingDirectory="$(ProjectDir)$(OutputPath)" Command="&quot;$(ProjectDir)$(OutputPath)ILRepack.exe&quot; /internalize /log:$(ProjectDir)$(OutputPath)ilrepack.log /out:$(ProjectDir)../build/$(Configuration)/net40/ILRepack.exe @(MergeAssemblies->'%(FileName)%(Extension)', ' ')" />
   </Target>
 
 </Project>
