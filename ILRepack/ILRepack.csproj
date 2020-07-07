@@ -67,6 +67,9 @@
   <ItemGroup>
     <EmbeddedResource Include="$(HomeDir)\.nuget\packages\sourcelink\1.1.0\tools\pdbstr.exe" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="SourceLink" Version="1.1.0" />
+  </ItemGroup>
   <Target Name="RepackAssemblies" AfterTargets="Build" Condition="'$(Configuration)|$(TargetFramework)' == 'Release|netcoreapp3.1'">
     <ItemGroup>
       <MergeAssemblies Include="$(OutputPath)$(AssemblyName).dll" />
