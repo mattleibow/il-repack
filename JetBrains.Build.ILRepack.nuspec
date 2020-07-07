@@ -3,7 +3,7 @@
   <metadata>
     <id>JetBrains.Build.ILRepack</id>
     <version>0.0.1</version>
-    <title>ILRepack</title>
+    <title>JetBrains.Build.ILRepack</title>
     <authors>Francois Valdy</authors>
     <owners>epeshk;jetbrains</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
