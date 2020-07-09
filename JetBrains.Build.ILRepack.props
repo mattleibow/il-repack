@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project>
+  <PropertyGroup>
+<!--    <ILRepackNet40>$(MSBuildThisFileDirectory)/../tools/net40/ILRepack.exe</ILRepackNet40>-->
+    <ILRepackNetCore>$(MSBuildThisFileDirectory)/../tools/netcore/ILRepack.dll</ILRepackNetCore>
+  </PropertyGroup>
+</Project>
