@@ -344,10 +344,10 @@ namespace ILRepacking
                 {
                     step.Perform();
                 }
-                
+
                 var parameters = new WriterParameters
                 {
-                    StrongNameKeyPair = signingStep.KeyPair,
+                    StrongNameKeyBlob = signingStep.KeyBlob,
                     WriteSymbols = Options.DebugInfo && PrimaryAssemblyMainModule.SymbolReader != null,
                     SymbolWriterProvider = PrimaryAssemblyMainModule.SymbolReader?.GetWriterProvider(),
                 };
@@ -373,6 +373,16 @@ namespace ILRepacking
                 GlobalAssemblyResolver.Dispose();
 
                 win32ResourceStep.Patch(Options.OutputFile);
+
+                // resign output assembly after patching win32 resources
+                if (signingStep.KeyBlob != null)
+                {
+                    var rp = new ReaderParameters(ReadingMode.Immediate) { AssemblyResolver = GlobalAssemblyResolver };
+
+                    using var ad = AssemblyDefinition.ReadAssembly(Options.OutputFile, rp);
+                    Options.OutputFile = GetTempFile(Options.OutputFile);
+                    ad.Write(Options.OutputFile, parameters);
+                }
 
                 MoveTempFile(Options.OutputFile, actualOutFile);
                 Options.OutputFile = actualOutFile;
