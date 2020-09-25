@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace ILRepacking.Steps
@@ -28,7 +29,7 @@ namespace ILRepacking.Steps
         readonly IRepackContext _repackContext;
         readonly RepackOptions _repackOptions;
 
-        public StrongNameKeyPair KeyPair { get; private set; }
+        public byte[] KeyBlob { get; private set; }
 
         public SigningStep(
             IRepackContext repackContext,
@@ -40,36 +41,21 @@ namespace ILRepacking.Steps
 
         public void Perform()
         {
-            if (_repackOptions.KeyContainer != null || (_repackOptions.KeyFile != null && File.Exists(_repackOptions.KeyFile)))
+            if (_repackOptions.KeyContainer != null)
             {
-                var snkp = default(StrongNameKeyPair);
-                var publicKey = default(byte[]);
-                if (_repackOptions.KeyContainer != null)
-                {
-                    snkp = new StrongNameKeyPair(_repackOptions.KeyContainer);
-                }
-                else if(_repackOptions.KeyFile != null && File.Exists(_repackOptions.KeyFile))
-                {
-                    var keyFileContents = File.ReadAllBytes(_repackOptions.KeyFile);
-                    try
-                    {
-                        snkp = new StrongNameKeyPair(keyFileContents);
-                        publicKey = snkp.PublicKey;
-                    }
-                    catch (ArgumentException)
-                    {
-                        snkp = null;
-                        if(_repackOptions.DelaySign)
-                        {
-                            publicKey = keyFileContents;
-                        }
-                    }
-                }
-                _repackContext.TargetAssemblyDefinition.Name.PublicKey = publicKey;
-                _repackContext.TargetAssemblyDefinition.Name.Attributes |= AssemblyAttributes.PublicKey;
-                _repackContext.TargetAssemblyMainModule.Attributes |= ModuleAttributes.StrongNameSigned;
-                if (!_repackOptions.DelaySign)
-                    KeyPair = snkp;
+                throw new NotImplementedException("Signing with KeyContainer was not supported.");
+            }
+            
+            if (_repackOptions.DelaySign)
+            {
+                throw new NotImplementedException("DelaySign was not supported.");
+            }
+            if (_repackOptions.KeyFile != null)
+            {
+                if (!File.Exists(_repackOptions.KeyFile))
+                    throw new IOException("KeyFile doesn't exist.");
+
+                KeyBlob = File.ReadAllBytes(_repackOptions.KeyFile);
             }
             else
             {
