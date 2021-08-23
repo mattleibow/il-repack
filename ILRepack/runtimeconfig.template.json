@@ -1,7 +1,3 @@
 {
-  "properties": {
-    "runtimeOptions": {
-      "rollForward": "Major"
-    }
-  }
+  "rollForward": "Major"
 }
