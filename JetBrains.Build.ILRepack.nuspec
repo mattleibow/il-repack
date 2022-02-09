@@ -7,7 +7,7 @@
     <authors>Francois Valdy</authors>
     <owners>epeshk;jetbrains</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <licenseUrl>https://github.com/gluck/il-repack/blob/master/LICENSE</licenseUrl>
+    <license type="expression">Apache-2.0</license>
     <projectUrl>https://github.com/gluck/il-repack/</projectUrl>
     <description>Yes</description>
     <copyright>Copyright Francois Valdy 2011-2015</copyright>
@@ -18,6 +18,6 @@
 	<file src="JetBrains.Build.ILRepack.props" target="build" />
 <!--    <file src="build\Release\net40\**" target="tools\net40" />-->
     <file src="build\Release\netcore\**" target="tools\netcore" />
-    <file src="_._" target="lib\net20" />
+    <file src="_._" target="lib\net" />
   </files>
 </package>
