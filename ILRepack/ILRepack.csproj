@@ -40,7 +40,6 @@
   <ItemGroup Condition="'$(Targetframework)' == 'net40'">
     <PackageReference Include="BamlParser" Version="1.0.0" />
     <PackageReference Include="fasterflect" Version="2.1.3" />
-    <PackageReference Include="Mono.Posix" Version="4.0.0.0" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net40" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(Targetframework)' == 'netcoreapp3.1'">
@@ -81,7 +80,6 @@
     <RemoveDir Directories="$(ProjectDir)..\build\$(Configuration)\netcore" />
     <Exec WorkingDirectory="$(ProjectDir)$(OutputPath)" Command="dotnet &quot;$(ProjectDir)$(OutputPath)ILRepack.dll&quot; /keyfile:&quot;$(ProjectDir)ILRepack.snk&quot; /internalize /log:$(ProjectDir)$(OutputPath)ilrepack.log /out:$(ProjectDir)../build/$(Configuration)/netcore/$(AssemblyName).dll @(MergeAssemblies->'%(FileName)%(Extension)', ' ')" />
     <Copy SourceFiles="$(OutputPath)$(AssemblyName).runtimeconfig.json;" DestinationFolder="$(ProjectDir)..\build\$(Configuration)\netcore\" />
-    <Copy SourceFiles="ILRepack.deps.json" DestinationFolder="$(ProjectDir)..\build\$(Configuration)\netcore\" />
     <Copy SourceFiles="@(RuntimesFolder)" DestinationFolder="$(ProjectDir)..\build\$(Configuration)\netcore\runtimes\%(RecursiveDir)" />
   </Target>
 
