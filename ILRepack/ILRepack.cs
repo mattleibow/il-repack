@@ -22,8 +22,6 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using ILRepacking.Steps;
 using Mono.Cecil;
-using Mono.Cecil.PE;
-using Mono.Unix.Native;
 using ILRepacking.Mixins;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Diagnostics;
@@ -391,10 +389,9 @@ namespace ILRepacking
                 // the primary assembly
                 if (isUnixEnvironment)
                 {
-                    Stat stat;
                     Logger.Info("Copying permissions from " + PrimaryAssemblyFile);
-                    Syscall.stat(PrimaryAssemblyFile, out stat);
-                    Syscall.chmod(Options.OutputFile, stat.st_mode);
+                    LibC.Stat(PrimaryAssemblyFile, out var stat);
+                    LibC.ChMod(Options.OutputFile, stat.st_mode);
                 }
                 if (hadStrongName && !TargetAssemblyDefinition.Name.HasPublicKey)
                     Options.StrongNameLost = true;
