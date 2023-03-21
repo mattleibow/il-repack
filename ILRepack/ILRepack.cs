@@ -112,8 +112,8 @@ namespace ILRepacking
             Logger.Info("Adding assembly for merge: " + assembly);
             try
             {
-                ReaderParameters rp          = new ReaderParameters(ReadingMode.Immediate) { AssemblyResolver = GlobalAssemblyResolver };
-                string           pdbFilePath = Path.ChangeExtension(assembly, "pdb");
+                ReaderParameters rp = new ReaderParameters(ReadingMode.Immediate) { AssemblyResolver = GlobalAssemblyResolver };
+                string pdbFilePath = Path.ChangeExtension(assembly, "pdb");
 
                 // read PDB/MDB?
                 if (Options.DebugInfo && File.Exists(pdbFilePath))
@@ -384,7 +384,6 @@ namespace ILRepacking
                 {
                     StrongNameKeyPair = signingStep.KeyPair,
                 };
-
                 parameters.WriteSymbols = TrySetSymbolData(parameters, out var pdpFileStream);
 
                 // create output directory if it does not exist
@@ -396,6 +395,7 @@ namespace ILRepacking
                 }
 
                 TargetAssemblyDefinition.Write(Options.OutputFile, parameters);
+
                 sourceServerDataStep.Write();
 
                 Logger.Info("Writing output assembly to disk");

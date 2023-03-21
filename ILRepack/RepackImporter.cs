@@ -422,7 +422,7 @@ namespace ILRepacking
             if (meth.MethodReturnType.HasCustomAttributes)
                 CopyCustomAttributes(meth.MethodReturnType.CustomAttributes, nm.MethodReturnType.CustomAttributes, nm);
 
-            if(meth.HasBody)
+            if (meth.HasBody)
             {
                 CloneTo(meth, nm);
                 CloneDebugInformationScope(meth, nm);
@@ -440,7 +440,7 @@ namespace ILRepacking
         private void CloneTo(MethodDefinition original, MethodDefinition parent)
         {
             MethodBody body = original.Body;
-            MethodBody nb   = new MethodBody(parent);
+            MethodBody nb = new MethodBody(parent);
             parent.Body = nb;
 
             nb.MaxStackSize = body.MaxStackSize;
@@ -448,7 +448,8 @@ namespace ILRepacking
             nb.LocalVarToken = body.LocalVarToken;
 
             foreach (VariableDefinition var in body.Variables)
-                nb.Variables.Add(new VariableDefinition(Import(var.VariableType, parent)));
+                nb.Variables.Add(new VariableDefinition(
+                    Import(var.VariableType, parent)));
 
             _repackContext.LineIndexer.PreMethodBodyRepack(body, parent);
             foreach (Instruction instr in body.Instructions)
