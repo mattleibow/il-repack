@@ -60,6 +60,7 @@ jobs:
           Configuration: ${{ matrix.configuration }}
 
       - name: Upload build artifacts
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: NuGet Packages
