@@ -168,9 +168,7 @@ namespace ILRepack.IntegrationTests.NuGet
                                   CreateNoWindow = true,
                                   UseShellExecute = false,
                                   RedirectStandardOutput = true,
-                                  FileName = Path.Combine(
-                                      Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                                          @".nuget\packages\SourceLink\1.1.0\tools\SourceLink.exe"),
+                                  FileName = Path.Combine("SourceLinkTools", "SourceLink.exe"),
                                   Arguments = "srctoolx --pdb " + pdbName
                               };
             using (var sourceLinkProcess = Process.Start(processInfo))
