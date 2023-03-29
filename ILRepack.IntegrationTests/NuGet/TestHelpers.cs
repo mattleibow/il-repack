@@ -30,7 +30,7 @@ namespace ILRepack.IntegrationTests.NuGet
 
         public static void DoRepackForCmd(IEnumerable<string> args)
         {
-            var repackOptions = new RepackOptions(args.Concat(new[] { "/log", "/readDebugSymbolAs:pdb", "/writeDebugSymbolAs:portable" }));
+            var repackOptions = new RepackOptions(args.Concat(new[] { "/log", "/writeDebugSymbolAs:portable" }));
             var repack = new ILRepacking.ILRepack(repackOptions);
             repack.Repack();
             ReloadAndCheckReferences(repackOptions);

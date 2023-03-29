@@ -27,7 +27,6 @@ namespace ILRepacking
         public bool Closed { get; set; } // UNIMPL
         public bool CopyAttributes { get; set; }
         public bool DebugInfo { get; set; }
-        public ILRepack.DebugSymbolKind ReadDebugSymbolAs { get; set; }
         public ILRepack.DebugSymbolKind WriteDebugSymbolAs { get; set; }
         public bool DelaySign { get; set; }
 
@@ -199,19 +198,7 @@ namespace ILRepacking
                 }
             }
 
-            var readDebugSymAs  = cmd.Option("readDebugSymbolAs");
             var writeDebugSymAs = cmd.Option("writeDebugSymbolAs");
-
-            switch(readDebugSymAs)
-            {
-                case "pdb":
-                    ReadDebugSymbolAs = ILRepack.DebugSymbolKind.PDB;
-                    break;
-                case "portable":
-                default:
-                    ReadDebugSymbolAs = ILRepack.DebugSymbolKind.PortablePDB;
-                    break;
-            }
 
             switch(writeDebugSymAs)
             {

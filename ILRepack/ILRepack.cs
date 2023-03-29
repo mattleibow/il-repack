@@ -116,9 +116,9 @@ namespace ILRepacking
                 string pdbFilePath = Path.ChangeExtension(assembly, "pdb");
 
                 // read PDB/MDB?
-                if (Options.DebugInfo && File.Exists(pdbFilePath))
+                if (Options.DebugInfo && (File.Exists(Path.ChangeExtension(assembly, "pdb")) || File.Exists(assembly + ".mdb")))
                 {
-                    SetSymbolData(rp, pdbFilePath);
+                    rp.ReadSymbols = true;
                 }
                 AssemblyDefinition mergeAsm;
                 try
@@ -161,41 +161,6 @@ namespace ILRepacking
             {
                 Logger.Error("Failed to load assembly " + assembly);
                 throw;
-            }
-
-            // -- //
-
-            void SetSymbolData(ReaderParameters rp, string pdbFilePath)
-            {
-                rp.ReadSymbols = true;
-
-                switch(Options.ReadDebugSymbolAs)
-                {
-                    case DebugSymbolKind.PortablePDB:
-                        rp.SymbolReaderProvider = new PortablePdbReaderProvider();
-                        break;
-                    case DebugSymbolKind.PDB:
-                        rp.SymbolReaderProvider = new PdbReaderProvider();
-                        break;
-                    default:
-                        rp.ReadSymbols = false;
-                        Logger.Error($"Unknown {nameof(DebugSymbolKind)} when reading. Set 'ReadSymbols' to false.");
-                        break;
-                }
-
-                if(rp.ReadSymbols)
-                {
-                    using(var fs = new FileStream(pdbFilePath, FileMode.Open, FileAccess.Read))
-                    {
-                        // Copy the file to memory so it can be closed right away and not be used anymore
-                        var ms = new MemoryStream();
-
-                        fs.CopyTo(ms);
-                        ms.Seek(0, SeekOrigin.Begin);
-
-                        rp.SymbolStream = ms;
-                    }
-                }
             }
         }
 

@@ -199,7 +199,7 @@ namespace ILRepack.IntegrationTests.NuGet
             Assert.IsTrue(list.Count >= platform.Packages.Count(), 
                 "There should be at least the same number of .dlls as the number of packages");
             Console.WriteLine("Merging {0}", string.Join(",",list));
-            TestHelpers.DoRepackForCmd(new []{"/out:"+Tmp("test.dll"), "/lib:"+tempDirectory, "/readDebugSymbolAs:pdb", "/writeDebugSymbolAs:portable"}.Concat(platform.Args).Concat(list.Select(Tmp).OrderBy(x => x)));
+            TestHelpers.DoRepackForCmd(new []{"/out:"+Tmp("test.dll"), "/lib:"+tempDirectory, "/writeDebugSymbolAs:portable"}.Concat(platform.Args).Concat(list.Select(Tmp).OrderBy(x => x)));
             Assert.IsTrue(File.Exists(Tmp("test.dll")));
         }
 
