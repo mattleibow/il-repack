@@ -2,9 +2,9 @@ name: Test ILRepack
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "main", "master", "dev/gh-actions" ]
   pull_request:
-    branches: [ "main", "master" ]
+    branches: [ "main", "master", "dev/gh-actions" ]
 
 jobs:
 
@@ -37,9 +37,7 @@ jobs:
           Configuration: ${{ matrix.configuration }}
 
       - name: Build ILRepack
-        run: >-
-          msbuild ILRepack.sln /t:Build /p:Configuration=$env:Configuration 
-            /p:Version=$env:ILREPACK_VERSION /p:AssemblyVersion=$env:ILREPACK_VERSION
+        run: msbuild ILRepack.sln /t:Build /p:Configuration=$env:Configuration
         env:
           Configuration: ${{ matrix.configuration }}
 

@@ -2,9 +2,9 @@ name: Build ILRepack
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "main", "master", "dev/gh-actions" ]
   pull_request:
-    branches: [ "main", "master" ]
+    branches: [ "main", "master", "dev/gh-actions" ]
 
 env:
   ILREPACK_VERSION: 2.1.0.0
