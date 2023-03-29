@@ -42,10 +42,10 @@ jobs:
           Configuration: ${{ matrix.configuration }}
 
       - name: Test ILRepack
-        run: >
-          mkdir artifacts -Force | Out-Null;
-          .\packages\NUnit.Runners\tools\nunit-console.exe /xml=artifacts\TestResult.xml
-            ILRepack.Tests\bin\$env:Configuration\ILRepack.Tests.dll
+        run: |
+          mkdir artifacts -Force | Out-Null
+          .\packages\NUnit.Runners\tools\nunit-console.exe /xml=artifacts\TestResult.xml          `
+            ILRepack.Tests\bin\$env:Configuration\ILRepack.Tests.dll                              `
             ILRepack.IntegrationTests\bin\$env:Configuration\ILRepack.IntegrationTests.dll
         env:
           Configuration: ${{ matrix.configuration }}
