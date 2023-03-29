@@ -64,7 +64,7 @@
       Command="&quot;$(TargetPath)&quot; /log /wildcards /internalize /ndebug /out:&quot;$(TargetDir)Repacked\$(TargetFilename)&quot; @(_RepackInputAssembly->'&quot;%(Identity)&quot;', ' ')"
       WorkingDirectory="$(TargetDir)" />
     <Exec
-      Command="&quot;$(TargetPath)&quot; /log /wildcards /internalize /target:library /keyfile:&quot;$(ProjectDir)\ILRepack.snk&quot; /out:&quot;$(TargetDir)Repacked\$(TargetName).dll&quot; @(_RepackInputAssembly->'&quot;%(Identity)&quot;', ' ')"
+      Command="&quot;$(TargetPath)&quot; /log /wildcards /internalize /target:library /keyfile:&quot;$(ProjectDir)\ILRepack.snk&quot; /out:&quot;$(TargetDir)RepackedLib\$(TargetName).dll&quot; @(_RepackInputAssembly->'&quot;%(Identity)&quot;', ' ')"
       WorkingDirectory="$(TargetDir)" />
 		<ItemGroup>
 			<FileWrites Include="$(TargetDir)Repacked\**" />

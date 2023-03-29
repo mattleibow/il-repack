@@ -22,6 +22,7 @@ If you need the tool as an executable, this is not the package you're looking fo
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\$configuration$\Repacked\ILRepack.dll" target="lib\net40" />
+    <file src="bin\$configuration$\RepackedLib\ILRepack.dll" target="lib\net40" />
+    <file src="bin\$configuration$\RepackedLib\ILRepack.pdb" target="lib\net40" />
   </files>
 </package>
