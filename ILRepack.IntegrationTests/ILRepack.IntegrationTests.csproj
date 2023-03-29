@@ -61,6 +61,7 @@
     </PackageReference>
     <PackageReference Include="SourceLink">
       <Version>1.1.0</Version>
+      <GeneratePathProperty>true</GeneratePathProperty>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
