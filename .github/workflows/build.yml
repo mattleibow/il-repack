@@ -40,21 +40,21 @@ jobs:
 
       - name: Build ILRepack
         run: >-
-          msbuild ILRepack\ILRepack.csproj /p:Configuration=$env:Configuration 
+          msbuild ILRepack\ILRepack.csproj /p:Configuration=$env:Configuration
             /p:Version=$env:ILREPACK_VERSION /p:AssemblyVersion=$env:ILREPACK_VERSION
         env:
           Configuration: ${{ matrix.configuration }}
 
       - name: NuGet pack ILRepack
         run: >-
-          nuget pack ILRepack\ILRepack.nuspec -BasePath ILRepack -OutputDirectory artifacts 
+          nuget pack ILRepack\ILRepack.nuspec -BasePath ILRepack -OutputDirectory artifacts
             -Version $env:ILREPACK_PACKAGE_VERSION -Properties Configuration=$env:Configuration
         env:
           Configuration: ${{ matrix.configuration }}
 
       - name: NuGet pack ILRepack.Lib
         run: >-
-          nuget pack ILRepack\ILRepack.Lib.nuspec -BasePath ILRepack -OutputDirectory artifacts 
+          nuget pack ILRepack\ILRepack.Lib.nuspec -BasePath ILRepack -OutputDirectory artifacts
             -Version $env:ILREPACK_PACKAGE_VERSION -Properties Configuration=$env:Configuration
         env:
           Configuration: ${{ matrix.configuration }}
