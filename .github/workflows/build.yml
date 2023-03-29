@@ -2,9 +2,9 @@ name: Build ILRepack
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
 
 env:
   ILREPACK_VERSION: 2.1.0.0
