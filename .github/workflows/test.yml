@@ -2,9 +2,9 @@ name: Test
 
 on:
   push:
-    branches: [ "main", "master", "dev/gh-actions" ]
+    branches: [ "main", "master" ]
   pull_request:
-    branches: [ "main", "master", "dev/gh-actions" ]
+    branches: [ "main", "master" ]
 
 jobs:
 

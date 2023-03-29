@@ -2,9 +2,9 @@ name: Build
 
 on:
   push:
-    branches: [ "main", "master", "dev/gh-actions" ]
+    branches: [ "main", "master" ]
   pull_request:
-    branches: [ "main", "master", "dev/gh-actions" ]
+    branches: [ "main", "master" ]
 
 env:
   ILREPACK_VERSION: 2.1.0.0
