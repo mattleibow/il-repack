@@ -1,4 +1,4 @@
-name: Build ILRepack
+name: Build
 
 on:
   push:
