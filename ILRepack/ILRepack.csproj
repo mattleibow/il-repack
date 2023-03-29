@@ -24,8 +24,6 @@
     <AssemblyTitle>ILRepack</AssemblyTitle>
     <Product>ILRepack</Product>
     <Copyright>Copyright © Francois Valdy 2011</Copyright>
-    <AssemblyVersion>2.1.0.0</AssemblyVersion>
-    <FileVersion>2.1.0.0</FileVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
@@ -57,4 +55,19 @@
   <ItemGroup>
     <EmbeddedResource Include="$(PkgSourceLink)\tools\pdbstr.exe" />
   </ItemGroup>
+  <Target Name="Repack" AfterTargets="Build" DependsOnTargets="Build">
+    <ItemGroup>
+      <_RepackInputAssembly Include="$(TargetPath)" />
+      <_RepackInputAssembly Include="$(TargetDir)*.dll" />
+    </ItemGroup>
+    <Exec
+      Command="&quot;$(TargetPath)&quot; /log /wildcards /internalize /ndebug /out:&quot;$(TargetDir)Repacked\$(TargetFilename)&quot; @(_RepackInputAssembly->'&quot;%(Identity)&quot;', ' ')"
+      WorkingDirectory="$(TargetDir)" />
+    <Exec
+      Command="&quot;$(TargetPath)&quot; /log /wildcards /internalize /target:library /keyfile:&quot;$(ProjectDir)\ILRepack.snk&quot; /out:&quot;$(TargetDir)Repacked\$(TargetName).dll&quot; @(_RepackInputAssembly->'&quot;%(Identity)&quot;', ' ')"
+      WorkingDirectory="$(TargetDir)" />
+		<ItemGroup>
+			<FileWrites Include="$(TargetDir)Repacked\**" />
+		</ItemGroup>
+  </Target>
 </Project>

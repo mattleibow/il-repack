@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>ILRepack.Lib</id>
+    <version>$version$</version>
+    <title>ILRepack - Open-source alternative to ILMerge</title>
+    <authors>Francois Valdy</authors>
+    <owners>Francois Valdy</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">Apache-2.0</license>
+    <projectUrl>https://github.com/gluck/il-repack</projectUrl>
+    <description>ILRepack is meant at replacing ILMerge / Mono.Merge. 
+The former being closed-source, impossible to customize, slow, resource consuming and many more. The later being deprecated, unsupported, and based on an old version of Mono.Cecil.
+
+This package provides a library, for use within tools/build projects. 
+If you need the tool as an executable, this is not the package you're looking for, this one is: http://www.nuget.org/packages/ILRepack/.</description>
+    <summary>ILRepack is a utility that can be used to merge multiple .NET assemblies into a single assembly (packaged as a library).</summary>
+    <copyright>Copyright Francois Valdy 2011-2015</copyright>
+    <dependencies>
+      <group targetFramework=".NETFramework4.0">
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\$configuration$\Repacked\ILRepack.dll" target="lib\net40" />
+  </files>
+</package>

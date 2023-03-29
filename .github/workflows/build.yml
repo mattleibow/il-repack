@@ -1,0 +1,66 @@
+name: Build ILRepack
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  ILREPACK_VERSION: 2.1.0.0
+  ILREPACK_PACKAGE_VERSION: 2.1.0-preview.1
+
+jobs:
+
+  build:
+
+    strategy:
+      matrix:
+        configuration: [ Debug, Release ]
+        os: [ windows-2019 ]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup MSBuild.exe
+        uses: microsoft/setup-msbuild@v1.0.2
+      - uses: nuget/setup-nuget@v1
+        with:
+          nuget-version: '5.x'
+
+      - name: Restore NuGet packages
+        run: nuget restore
+        env:
+          Configuration: ${{ matrix.configuration }}
+
+      - name: Build ILRepack
+        run: >-
+          msbuild ILRepack\ILRepack.csproj /p:Configuration=$env:Configuration 
+            /p:Version=$env:ILREPACK_VERSION /p:AssemblyVersion=$env:ILREPACK_VERSION
+        env:
+          Configuration: ${{ matrix.configuration }}
+
+      - name: NuGet pack ILRepack
+        run: >-
+          nuget pack ILRepack\ILRepack.nuspec -BasePath ILRepack -OutputDirectory artifacts 
+            -Version $env:ILREPACK_PACKAGE_VERSION -Properties Configuration=$env:Configuration
+        env:
+          Configuration: ${{ matrix.configuration }}
+
+      - name: NuGet pack ILRepack.Lib
+        run: >-
+          nuget pack ILRepack\ILRepack.Lib.nuspec -BasePath ILRepack -OutputDirectory artifacts 
+            -Version $env:ILREPACK_PACKAGE_VERSION -Properties Configuration=$env:Configuration
+        env:
+          Configuration: ${{ matrix.configuration }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: NuGet Packages
+          path: artifacts
