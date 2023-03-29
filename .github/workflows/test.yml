@@ -1,0 +1,58 @@
+name: Test
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+
+  build:
+
+    strategy:
+      matrix:
+        configuration: [ Debug, Release ]
+        os: [ windows-2019 ]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Setup MSBuild.exe
+        uses: microsoft/setup-msbuild@v1.0.2
+      - uses: nuget/setup-nuget@v1
+        with:
+          nuget-version: '5.x'
+      - name: Setup NUnit
+        run: nuget install NUnit.Runners -o packages -ExcludeVersion -Version 2.6.4
+
+      - name: Restore NuGet packages
+        run: nuget restore
+        env:
+          Configuration: ${{ matrix.configuration }}
+
+      - name: Build ILRepack
+        run: msbuild ILRepack.sln /t:Build /p:Configuration=$env:Configuration
+        env:
+          Configuration: ${{ matrix.configuration }}
+
+      - name: Test ILRepack
+        run: |
+          mkdir artifacts -Force | Out-Null
+          .\packages\NUnit.Runners\tools\nunit-console.exe /xml=artifacts\TestResult.xml          `
+            ILRepack.Tests\bin\$env:Configuration\ILRepack.Tests.dll                              `
+            ILRepack.IntegrationTests\bin\$env:Configuration\ILRepack.IntegrationTests.dll
+        env:
+          Configuration: ${{ matrix.configuration }}
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Test Results (${{ matrix.configuration }})
+          path: artifacts

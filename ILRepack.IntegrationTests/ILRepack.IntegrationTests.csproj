@@ -91,7 +91,14 @@
     </PackageReference>
     <PackageReference Include="SourceLink">
       <Version>1.1.0</Version>
+      <GeneratePathProperty>true</GeneratePathProperty>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="CopySourceLinkToOutput" AfterTargets="Build">
+    <ItemGroup>
+      <_SourceLinkFiles Include="$(PkgSourceLink)\tools\**" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_SourceLinkFiles)" DestinationFolder="$(TargetDir)SourceLinkTools\%(RecursiveDir)" />
+  </Target>
 </Project>
