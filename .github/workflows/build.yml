@@ -2,7 +2,7 @@ name: Build ILRepack
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "main", "master", "dev/gh-actions" ]
   pull_request:
     branches: [ "main", "master" ]
 
