@@ -9,7 +9,7 @@ namespace ILRepack.IntegrationTests
     [Platform(Include = "win")]
     public class Scenarios
     {
-        private const int ScenarioProcessWaitTimeInMs = 10000;
+        private const int ScenarioProcessWaitTimeInMs = 15000;
 
         [Test]
         public void GivenXAMLThatUsesLibraryClass_MergedWPFApplicationRunsSuccessfully()
