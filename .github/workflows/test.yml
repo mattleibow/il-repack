@@ -54,5 +54,5 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: Test Results
+          name: Test Results (${{ matrix.configuration }})
           path: artifacts
