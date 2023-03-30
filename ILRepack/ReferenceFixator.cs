@@ -332,9 +332,18 @@ namespace ILRepacking
         {
             if (typeAttribute == null)
                 return false;
-            if (typeAttribute.Interfaces.Any(@interface => @interface.FullName == "java.lang.annotation.Annotation"))
+            if (typeAttribute.Interfaces.Any(@interface => @interface.InterfaceType.FullName == "java.lang.annotation.Annotation"))
                 return true;
             return typeAttribute.BaseType != null && IsAnnotation(typeAttribute.BaseType.Resolve());
+        }
+
+        private void FixReferences(Collection<GenericParameterConstraint> constraints)
+        {
+            for (int i = 0; i < constraints.Count; i++)
+            {
+                constraints[i].ConstraintType = Fix(constraints[i].ConstraintType);
+                FixReferences(constraints[i].CustomAttributes);
+            }
         }
 
         private void FixReferences(Collection<TypeReference> refs)
@@ -342,6 +351,15 @@ namespace ILRepacking
             for (int i = 0; i < refs.Count; i++)
             {
                 refs[i] = Fix(refs[i]);
+            }
+        }
+
+        private void FixReferences(Collection<InterfaceImplementation> implementations)
+        {
+            for (int i = 0; i < implementations.Count; i++)
+            {
+                implementations[i].InterfaceType = Fix(implementations[i].InterfaceType);
+                FixReferences(implementations[i].CustomAttributes);
             }
         }
 
