@@ -4,7 +4,7 @@ on:
   workflow_run:
     workflows: [ "Test" ]
     branches: [ "main", "master" ]
-    types: 
+    types:
       - completed
 
 jobs:
@@ -25,13 +25,13 @@ jobs:
       - name: Generate HTML test report
         uses: rempelj/nunit-html-action@v1.0.1
         with:
-          inputXmlPath: artifacts/TestResult.xml
+          inputXmlPath: TestResult.xml
           outputHtmlPath: artifacts/results.html
 
-      - name: Generate NUnit GH Summary comment 
+      - name: Generate NUnit summary comment 
         uses: sierpinskid/unity-nunit-github-comment@v1
         with:
-          inputXmlPath: artifacts/TestResult.xml
+          inputXmlPath: TestResult.xml
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
