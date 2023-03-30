@@ -38,12 +38,35 @@ namespace ILRepack.IntegrationTests.NuGet
 
         private static void ReloadAndCheckReferences(RepackOptions repackOptions)
         {
+            var loaded = new List<AssemblyDefinition>();
+
             var outputFile = AssemblyDefinition.ReadAssembly(repackOptions.OutputFile, new ReaderParameters(ReadingMode.Immediate));
-            var mergedFiles = repackOptions.ResolveFiles().Select(f => AssemblyDefinition.ReadAssembly(f, new ReaderParameters(ReadingMode.Deferred)));
-            foreach (var a in outputFile.MainModule.AssemblyReferences.Where(x => mergedFiles.Any(y => repackOptions.KeepOtherVersionReferences ? x.FullName == y.FullName : x.Name == y.Name.Name)))
+            loaded.Add(outputFile);
+
+            var mergedFiles = repackOptions.ResolveFiles().Select(f =>
             {
-                Assert.Fail($"Merged assembly retains a reference to one (or more) of the merged files: {a.FullName}");
+                var def = AssemblyDefinition.ReadAssembly(f, new ReaderParameters(ReadingMode.Deferred));
+                loaded.Add(def);
+                return def;
+            });
+
+            try
+            {
+                foreach (var a in outputFile.MainModule.AssemblyReferences.Where(x => mergedFiles.Any(y => repackOptions.KeepOtherVersionReferences ? x.FullName == y.FullName : x.Name == y.Name.Name)))
+                {
+                    Assert.Fail($"Merged assembly retains a reference to one (or more) of the merged files: {a.FullName}");
+                }
             }
+            finally
+            {
+                foreach (var a in loaded)
+                    a.Dispose();
+            }
+        }
+
+        public static void SaveAs(string input, string directory, string fileName)
+        {
+            SaveAs(File.OpenRead(input), directory, fileName);
         }
 
         public static void SaveAs(Stream input, string directory, string fileName)

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using ClassLibraryPortablePdb;
 
 namespace DotNet462NetStandard2
 {
@@ -40,6 +41,18 @@ namespace DotNet462NetStandard2
             }
             else
             {
+                Console.WriteLine("Reflection failed");
+                return -1;
+            }
+
+            var testPortablePdb = new ClassFromPortablePdb();
+            if (testPortablePdb.TestAddThree(2) == 5)
+            {
+                Console.WriteLine("Portable PDB assembly success");
+            }
+            else
+            {
+                Console.WriteLine("Portable PDB assembly failed");
                 return -1;
             }
 

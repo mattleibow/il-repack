@@ -9,6 +9,9 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.PlatformServices;
 using ILRepacking.Steps.SourceServerData;
+using Mono.Cecil;
+using Mono.Cecil.Pdb;
+using Mono.Cecil.Cil;
 
 namespace ILRepack.IntegrationTests.NuGet
 {
@@ -82,6 +85,21 @@ namespace ILRepack.IntegrationTests.NuGet
             var errors = PeverifyHelper.Peverify(tempDirectory, "test.dll").Do(Console.WriteLine).ToErrorCodes().ToEnumerable();
             Assert.IsFalse(errors.Contains(PeverifyHelper.VER_E_TOKEN_RESOLVE));
             Assert.IsFalse(errors.Contains(PeverifyHelper.VER_E_TYPELOAD));
+        }
+
+        [Test]
+        [TestCase("ClassLibrary", typeof(PdbReaderProvider))]
+        [TestCase("ClassLibraryPortablePdb", typeof(PortablePdbReaderProvider))]
+        public void VerifiesSymbolTypeIsPreserved(string scenarioName, Type symbolReaderProviderType)
+        {
+            TestHelpers.SaveAs(GetScenarioSourceFile(scenarioName, "dll"), tempDirectory, "foo.dll");
+            TestHelpers.SaveAs(GetScenarioSourceFile(scenarioName, "pdb"), tempDirectory, "foo.pdb");
+
+            RepackFoo(scenarioName);
+
+            VerifyTest("foo.dll");
+
+            VerifySymbolTypeForFoo(symbolReaderProviderType);
         }
 
         [Test]
@@ -195,6 +213,11 @@ namespace ILRepack.IntegrationTests.NuGet
             return Path.Combine(tempDirectory, file);
         }
 
+        void VerifyTest(params string[] mergedLibraries)
+        {
+            VerifyTest((IEnumerable<string>)mergedLibraries);
+        }
+
         void VerifyTest(IEnumerable<string> mergedLibraries)
         {
             if (XPlat.IsMono) return;
@@ -212,6 +235,50 @@ namespace ILRepack.IntegrationTests.NuGet
             Console.WriteLine("Merging {0}", assemblyName);
             TestHelpers.DoRepackForCmd("/out:"+Tmp("test.dll"), Tmp("foo.dll"));
             Assert.IsTrue(File.Exists(Tmp("test.dll")));
+        }
+
+        void VerifySymbolTypeForFoo(Type symbolReaderProvider)
+        {
+            var provider = (ISymbolReaderProvider)Activator.CreateInstance(symbolReaderProvider);
+
+            using (var module = ModuleDefinition.ReadModule(Tmp("foo.dll")))
+            using (var reader = provider.GetSymbolReader(module, Tmp("foo.pdb")))
+            {
+                var dir = module.GetDebugHeader();
+                var result = reader.ProcessDebugHeader(dir);
+
+                Assert.True(result, "Unable to read debug header");
+            }
+        }
+
+        string GetScenarioSourceFile(string scenarioName, string type = "dll")
+        {
+            string scenariosDirectory = Path.Combine(TestContext.CurrentContext.TestDirectory, @"..\..\Scenarios\");
+            string scenarioDirectory = Path.Combine(scenariosDirectory, scenarioName);
+            string scenarioExecutableFileName = scenarioName + "." + type;
+
+            return Path.GetFullPath(Path.Combine(
+                scenarioDirectory,
+                "bin",
+                GetRunningConfiguration(),
+                scenarioExecutableFileName));
+        }
+
+        private static void AssertFileExists(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                Assert.Fail("File '{0}' does not exist.", filePath);
+            }
+        }
+
+        private string GetRunningConfiguration()
+        {
+#if DEBUG
+            return "Debug";
+#else
+            return "Release";
+#endif
         }
     }
 }

@@ -443,14 +443,14 @@ namespace ILRepacking
             nb.LocalVarToken = body.LocalVarToken;
 
             foreach (VariableDefinition var in body.Variables)
-                nb.Variables.Add(new VariableDefinition(var.Name,
+                nb.Variables.Add(new VariableDefinition(
                     Import(var.VariableType, parent)));
 
-            nb.Instructions.SetCapacity(body.Instructions.Count);
+            nb.Instructions.Capacity = body.Instructions.Count;
             _repackContext.LineIndexer.PreMethodBodyRepack(body, parent);
             foreach (Instruction instr in body.Instructions)
             {
-                _repackContext.LineIndexer.ProcessMethodBodyInstruction(instr);
+                _repackContext.LineIndexer.ProcessMethodBodyInstruction(parent, instr);
 
                 Instruction ni;
 
@@ -540,7 +540,7 @@ namespace ILRepacking
                         default:
                             throw new InvalidOperationException();
                     }
-                ni.SequencePoint = instr.SequencePoint;
+                ni.Offset = instr.Offset;
                 nb.Instructions.Add(ni);
             }
             _repackContext.LineIndexer.PostMethodBodyRepack(parent);
@@ -582,6 +582,95 @@ namespace ILRepacking
 
                 nb.ExceptionHandlers.Add(neh);
             }
+
+            CopyDebugInformation(body.Method, parent);
+        }
+
+        public void CopyDebugInformation(MethodDefinition input, MethodDefinition output)
+        {
+            CopySequencePoints(input, output);
+
+            // TODO: copy CustomDebugInformations
+            //if (input.DebugInformation.HasCustomDebugInformations)
+            //    CopyCustomDebugInformations(input, output);
+
+            output.DebugInformation.Scope = CopyDebugInformationScope(input.DebugInformation.Scope, output);
+        }
+
+        static void CopySequencePoints(MethodDefinition input, MethodDefinition output)
+        {
+            if (!input.DebugInformation.HasSequencePoints)
+                return;
+
+            foreach (var instr in input.Body.Instructions)
+            {
+                SequencePoint point = input.DebugInformation.GetSequencePoint(instr);
+                if (point == null)
+                    continue;
+
+                Instruction ni = output.Body.Instructions.First(i => i.Offset == instr.Offset);
+                SequencePoint nsp = new SequencePoint(ni, point.Document)
+                {
+                    StartLine = point.StartLine,
+                    EndLine = point.EndLine,
+                    StartColumn = point.StartColumn,
+                    EndColumn = point.EndColumn
+                };
+
+                output.DebugInformation.SequencePoints.Add(nsp);
+            }
+        }
+
+        static ScopeDebugInformation CopyDebugInformationScope(ScopeDebugInformation input, MethodDefinition parent)
+        {
+            if (input == null)
+                return null;
+
+            ScopeDebugInformation nsdi = new ScopeDebugInformation(
+                parent.Body.Instructions.First(i => i.Offset == input.Start.Offset),
+                input.End.IsEndOfMethod ? null : parent.Body.Instructions.First(i => i.Offset == input.End.Offset));
+
+            foreach (ScopeDebugInformation nested in input.Scopes)
+                nsdi.Scopes.Add(CopyDebugInformationScope(nested, parent));
+
+            if (input.Import != null)
+            {
+                var nidi = new ImportDebugInformation();
+                foreach (ImportTarget target in input.Import.Targets)
+                {
+                    var nt = new ImportTarget(target.Kind)
+                    {
+                        Namespace = target.Namespace,
+                        Alias = target.Alias,
+                        Type = target.Type == null ? null : parent.Module.ImportReference(target.Type),
+                        AssemblyReference = target.AssemblyReference == null ? null : parent.Module.Assembly.Name // TODO: determine where the type is - if it has not moved
+                    };
+                    nidi.Targets.Add(nt);
+                }
+                nsdi.Import = nidi;
+            }
+
+            foreach (VariableDebugInformation variable in input.Variables)
+            {
+                var variableDef = parent.Body.Variables.First(v => v.Index == variable.Index);
+                var nvdi = new VariableDebugInformation(variableDef, variable.Name)
+                {
+                    Attributes = variable.Attributes,
+                    IsDebuggerHidden = variable.IsDebuggerHidden
+                };
+                nsdi.Variables.Add(nvdi);
+            }
+
+            foreach (ConstantDebugInformation constant in input.Constants)
+            {
+                var ncdi = new ConstantDebugInformation(
+                    constant.Name,
+                    parent.Module.ImportReference(constant.ConstantType),
+                    constant.Value);
+                nsdi.Constants.Add(ncdi);
+            }
+
+            return nsdi;
         }
 
         private TypeDefinition CreateType(TypeDefinition type, Collection<TypeDefinition> col, bool internalize, string rename)
@@ -605,7 +694,7 @@ namespace ILRepacking
             // don't copy these twice if UnionMerge==true
             // TODO: we can move this down if we chek for duplicates when adding
             CopySecurityDeclarations(type.SecurityDeclarations, nt.SecurityDeclarations, nt);
-            CopyTypeReferences(type.Interfaces, nt.Interfaces, nt);
+            CopyInterfaceImplementation(type.Interfaces, nt.Interfaces, nt);
             CopyCustomAttributes(type.CustomAttributes, nt.CustomAttributes, nt);
             return nt;
         }
@@ -755,7 +844,7 @@ namespace ILRepacking
                 output.Add(ngp);
             }
             // delay copy to ensure all generics parameters are already present
-            Copy(input, output, (gp, ngp) => CopyTypeReferences(gp.Constraints, ngp.Constraints, nt));
+            Copy(input, output, (gp, ngp) => CopyGenericParameterContraints(gp.Constraints, ngp.Constraints, nt));
             Copy(input, output, (gp, ngp) => CopyCustomAttributes(gp.CustomAttributes, ngp.CustomAttributes, nt));
         }
 
@@ -829,6 +918,32 @@ namespace ILRepacking
             foreach (TypeReference ta in input)
             {
                 output.Add(Import(ta, context));
+            }
+        }
+
+        public void CopyInterfaceImplementation(Collection<InterfaceImplementation> input, Collection<InterfaceImplementation> output, IGenericParameterProvider context)
+        {
+            foreach (InterfaceImplementation impl in input)
+            {
+                var ni = new InterfaceImplementation(Import(impl.InterfaceType, context))
+                {
+                    MetadataToken = impl.MetadataToken
+                };
+                CopyCustomAttributes(impl.CustomAttributes, ni.CustomAttributes, context);
+                output.Add(ni);
+            }
+        }
+
+        public void CopyGenericParameterContraints(Collection<GenericParameterConstraint> input, Collection<GenericParameterConstraint> output, IGenericParameterProvider context)
+        {
+            foreach (GenericParameterConstraint gpc in input)
+            {
+                var ngpc = new GenericParameterConstraint(Import(gpc.ConstraintType, context))
+                {
+                    MetadataToken = gpc.MetadataToken
+                };
+                CopyCustomAttributes(gpc.CustomAttributes, ngpc.CustomAttributes, context);
+                output.Add(ngpc);
             }
         }
 
