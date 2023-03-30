@@ -14,10 +14,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v3
-        with:
-          submodules: true
 
       - name: Download test results
         uses: actions/download-artifact@v2.1.1
