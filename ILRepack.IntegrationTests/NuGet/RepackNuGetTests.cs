@@ -89,7 +89,7 @@ namespace ILRepack.IntegrationTests.NuGet
 
         [Test]
         [TestCase("ClassLibrary", typeof(PdbReaderProvider))]
-        [TestCase("ClassLibraryPortablePdb", typeof(PdbReaderProvider))]
+        [TestCase("ClassLibraryPortablePdb", typeof(PortablePdbReaderProvider))]
         public void VerifiesSymbolTypeIsPreserved(string scenarioName, Type symbolReaderProviderType)
         {
             TestHelpers.SaveAs(GetScenarioSourceFile(scenarioName, "dll"), tempDirectory, "foo.dll");
@@ -241,11 +241,11 @@ namespace ILRepack.IntegrationTests.NuGet
         {
             var provider = (ISymbolReaderProvider)Activator.CreateInstance(symbolReaderProvider);
 
-            var module = ModuleDefinition.ReadModule(Tmp("foo.dll"));
+            using (var module = ModuleDefinition.ReadModule(Tmp("foo.dll")))
             using (var reader = provider.GetSymbolReader(module, Tmp("foo.pdb")))
             {
-                var dir = module.GetDebugHeader(out var header);
-                var result = reader.ProcessDebugHeader(dir, header);
+                var dir = module.GetDebugHeader();
+                var result = reader.ProcessDebugHeader(dir);
 
                 Assert.True(result, "Unable to read debug header");
             }
