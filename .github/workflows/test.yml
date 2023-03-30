@@ -50,6 +50,12 @@ jobs:
         env:
           Configuration: ${{ matrix.configuration }}
 
+      - name: Generate NUnit GH Summary comment 
+        uses: sierpinskid/unity-nunit-github-comment@v1
+        if: always()
+        with:
+          inputXmlPath: artifacts\TestResult.xml
+
       - name: Upload build artifacts
         if: always()
         uses: actions/upload-artifact@v3
