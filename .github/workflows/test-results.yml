@@ -1,0 +1,38 @@
+name: Test Results
+
+on:
+  workflow_run:
+    workflows: [ "Test" ]
+    branches: [ "main", "master" ]
+    types: 
+      - completed
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Download test results
+        uses: actions/download-artifact@v2.1.1
+        with:
+          name: Test Results (Release)
+
+      - name: Generate HTML test report
+        uses: rempelj/nunit-html-action@v1.0.1
+        with:
+          inputXmlPath: artifacts/TestResult.xml
+          outputHtmlPath: artifacts/results.html
+
+      - name: Generate NUnit GH Summary comment 
+        uses: sierpinskid/unity-nunit-github-comment@v1
+        with:
+          inputXmlPath: artifacts/TestResult.xml
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: HTML Test Results
+          path: artifacts
