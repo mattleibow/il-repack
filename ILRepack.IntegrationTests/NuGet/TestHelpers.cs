@@ -64,6 +64,11 @@ namespace ILRepack.IntegrationTests.NuGet
             }
         }
 
+        public static void SaveAs(string input, string directory, string fileName)
+        {
+            SaveAs(File.OpenRead(input), directory, fileName);
+        }
+
         public static void SaveAs(Stream input, string directory, string fileName)
         {
             var path = Path.Combine(directory, Path.GetFileName(fileName));
